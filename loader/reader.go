@@ -10,6 +10,10 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+const AUTHORS_FILE = "resources/authors.csv"
+const BOOKS_FILE = "resources/books.csv"
+const MAGAZINES_FILE = "resources/magazines.csv"
+
 func ReadTexts() []SearchableText {
 	results := make(chan []SearchableText, 2)
 	defer close(results)
@@ -30,7 +34,7 @@ func ReadTexts() []SearchableText {
 }
 
 func readAuthors() []Author {
-	f, err := os.Open("resources/authors.csv")
+	f, err := os.Open(AUTHORS_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -77,7 +81,7 @@ func findAuthor(authors []Author, email string) *Author {
 }
 
 func readMagazines(authors []Author, results chan []SearchableText) {
-	f, err := os.Open("resources/magazines.csv")
+	f, err := os.Open(MAGAZINES_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -103,7 +107,7 @@ func readMagazines(authors []Author, results chan []SearchableText) {
 }
 
 func readBooks(authors []Author, results chan []SearchableText) {
-	f, err := os.Open("resources/books.csv")
+	f, err := os.Open(BOOKS_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
