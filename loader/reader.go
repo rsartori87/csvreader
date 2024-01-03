@@ -10,20 +10,20 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-const AUTHORS_FILE = "resources/authors.csv"
-const BOOKS_FILE = "resources/books.csv"
-const MAGAZINES_FILE = "resources/magazines.csv"
+const AUTHORS_FILE = "/authors.csv"
+const BOOKS_FILE = "/books.csv"
+const MAGAZINES_FILE = "/magazines.csv"
 
-func ReadTexts() []SearchableText {
+func ReadTexts(basePath string) []SearchableText {
 	results := make(chan []SearchableText, 2)
 	defer close(results)
 	
-	authors := readAuthors()
+	authors := readAuthors(basePath)
 	
 	output := []SearchableText{}
 
-	go readBooks(authors, results)
-	go readMagazines(authors, results)
+	go readBooks(basePath, authors, results)
+	go readMagazines(basePath, authors, results)
 
 	for i := 0; i < 2; i++ {
 		r := <-results
@@ -33,8 +33,8 @@ func ReadTexts() []SearchableText {
 	return output
 }
 
-func readAuthors() []Author {
-	f, err := os.Open(AUTHORS_FILE)
+func readAuthors(basePath string) []Author {
+	f, err := os.Open(basePath + AUTHORS_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -80,8 +80,8 @@ func findAuthor(authors []Author, email string) *Author {
 	return &authors[i]
 }
 
-func readMagazines(authors []Author, results chan []SearchableText) {
-	f, err := os.Open(MAGAZINES_FILE)
+func readMagazines(basePath string, authors []Author, results chan []SearchableText) {
+	f, err := os.Open(basePath + MAGAZINES_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -94,8 +94,8 @@ func readMagazines(authors []Author, results chan []SearchableText) {
 		m := megazine{
 			SearchableText: text{
 				title: line[0],
-				Isbn: line[1],
-				Authors: findAuthors(authors, line[2]),
+				isbn: line[1],
+				authors: findAuthors(authors, line[2]),
 			},
 			PublishedAt: line[3],
 		}
@@ -106,8 +106,8 @@ func readMagazines(authors []Author, results chan []SearchableText) {
 	results <- result
 }
 
-func readBooks(authors []Author, results chan []SearchableText) {
-	f, err := os.Open(BOOKS_FILE)
+func readBooks(basePath string, authors []Author, results chan []SearchableText) {
+	f, err := os.Open(basePath + BOOKS_FILE)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -120,8 +120,8 @@ func readBooks(authors []Author, results chan []SearchableText) {
 		b := book{
 			SearchableText: text{
 				title: line[0],
-				Isbn: line[1],
-				Authors: findAuthors(authors, line[2]),
+				isbn: line[1],
+				authors: findAuthors(authors, line[2]),
 			},
 			Description: line[3],
 		}

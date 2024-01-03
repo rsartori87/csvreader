@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	texts := loader.ReadTexts()
+	texts := loader.ReadTexts("resources")
 
 	sort.Slice(texts, func(i, j int) bool {
 		return texts[i].Title() < texts[j].Title()

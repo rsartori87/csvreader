@@ -6,8 +6,8 @@ import (
 
 type text struct {
 	title string
-	Isbn string
-	Authors []Author
+	isbn string
+	authors []Author
 }
 
 type book struct {
@@ -22,17 +22,27 @@ type megazine struct {
 
 type SearchableText interface {
 	Title() string
+	Authors() []Author
 	Print()
+	Isbn() string
 }
 
 func (t text) Title() string {
 	return t.title
 }
 
+func (t text) Authors() []Author {
+	return t.authors
+}
+
+func (t text) Isbn() string {
+	return t.isbn
+}
+
 func (t text) Print() {
 	fmt.Printf("Title: %s\n", t.title)
-	fmt.Printf("Isbn: %s\n", t.Isbn)
-	for _, a := range t.Authors {
+	fmt.Printf("Isbn: %s\n", t.isbn)
+	for _, a := range t.authors {
 		a.Print()
 	}
 }
