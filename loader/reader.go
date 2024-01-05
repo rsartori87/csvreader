@@ -14,13 +14,13 @@ const AUTHORS_FILE = "/authors.csv"
 const BOOKS_FILE = "/books.csv"
 const MAGAZINES_FILE = "/magazines.csv"
 
-func ReadTexts(basePath string) []SearchableText {
-	results := make(chan []SearchableText, 2)
+func ReadTexts(basePath string) textCollection {
+	results := make(chan textCollection, 2)
 	defer close(results)
 	
 	authors := readAuthors(basePath)
 	
-	output := []SearchableText{}
+	output := textCollection{}
 
 	go readBooks(basePath, authors, results)
 	go readMagazines(basePath, authors, results)
@@ -80,7 +80,7 @@ func findAuthor(authors []Author, email string) *Author {
 	return &authors[i]
 }
 
-func readMagazines(basePath string, authors []Author, results chan []SearchableText) {
+func readMagazines(basePath string, authors []Author, results chan textCollection) {
 	f, err := os.Open(basePath + MAGAZINES_FILE)
 	if err != nil {
 		log.Fatal(err)
@@ -88,7 +88,7 @@ func readMagazines(basePath string, authors []Author, results chan []SearchableT
 	defer f.Close()
 
 	lines := readLines(f)
-	result := []SearchableText{}
+	result := textCollection{}
 
 	for _, line := range lines {
 		m := megazine{
@@ -106,7 +106,7 @@ func readMagazines(basePath string, authors []Author, results chan []SearchableT
 	results <- result
 }
 
-func readBooks(basePath string, authors []Author, results chan []SearchableText) {
+func readBooks(basePath string, authors []Author, results chan textCollection) {
 	f, err := os.Open(basePath + BOOKS_FILE)
 	if err != nil {
 		log.Fatal(err)
@@ -114,7 +114,7 @@ func readBooks(basePath string, authors []Author, results chan []SearchableText)
 	defer f.Close()
 
 	lines := readLines(f)
-	result := []SearchableText{}
+	result := textCollection{}
 
 	for _, line := range lines {
 		b := book{
